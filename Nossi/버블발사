@@ -14,7 +14,6 @@ int shoot(int bubbleType, int direction);
 void move(int direction);
 bool checkNear(Pos);
 int howMany();
-void showMap(Pos, int);
 int map[22][12];
 int shooterY; // 1~width까지
 int Bwidth;
@@ -121,7 +120,7 @@ int shoot(int bubbleType, int direction)
                     direction = 0;
                 break;
             }
-            showMap(bubble, bubbleType);
+
             // 버블이랑 인접하거나 천장까지 도달했다면 break해주면 될듯!
             if (checkNear(bubble) || bubble.x == 1)
             {
@@ -168,24 +167,4 @@ int howMany()
         }
     }
     return count;
-}
-void showMap(Pos bubble, int bubbleType)
-{
-
-    for (int i = 0; i <= Bheight + 1; i++)
-    {
-        for (int j = 0; j <= Bwidth + 1; j++)
-        {
-            if (j == bubble.y && i == bubble.x)
-                cout << bubbleType << " ";
-            else
-            {
-                if (map[i][j] == -1)
-                    cout << "* ";
-                else
-                    cout << map[i][j] << " ";
-            }
-        }
-        cout << endl;
-    }
 }
