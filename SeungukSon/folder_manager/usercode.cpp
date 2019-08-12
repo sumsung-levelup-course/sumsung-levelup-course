@@ -93,7 +93,7 @@ public:
 	{
 		char out[] = OUT;
 		itr = itr->next;
-		if (strcmp(itr->data, out) != 0) return 1;
+		if (itr != head) return 1;
 		else return 0;
 	}
 	void add(char word[], int nownum);
@@ -115,7 +115,7 @@ void delNode(Node* d)
 	first->next = last;
 	last->prev = first;
 	char outof_range[] = OUT;
-	file_list[d->idx].setName(outof_range); //file_listÀÇ ÀÌ¸§À» '}'·Î ¼³Á¤
+	file_list[d->idx].setName(outof_range); //file_listì˜ ì´ë¦„ì„ '}'ë¡œ ì„¤ì •
 	delcnt++;
 	delete d;
 }
@@ -131,7 +131,7 @@ void delson(int idx)
 	}
 }
 void LinkedList::add(char word[], int nownum)
-{//sNode¾ÕÀÚ¸®¿¡ word°ªÀ» °¡Áø ³ëµå Ãß°¡, file_list¿¡ Ãß°¡±îÁö µÈ´Ù.
+{//sNodeì•ìë¦¬ì— wordê°’ì„ ê°€ì§„ ë…¸ë“œ ì¶”ê°€, file_listì— ì¶”ê°€ê¹Œì§€ ëœë‹¤.
 	Node* newone = new Node;
 	strcpy(newone->data, word);
 
@@ -139,7 +139,7 @@ void LinkedList::add(char word[], int nownum)
 	while (getNext())
 	{
 		int flag = strcmp(word, itr->data);
-		if (!flag) return; //¾Æ¿¹°°À¸¸é ¸®ÅÏ
+		if (!flag) return; //ì•„ì˜ˆê°™ìœ¼ë©´ ë¦¬í„´
 		if (strcmp(word, itr->data) < 0) break;
 	}
 	Node* first = itr->prev;
@@ -189,29 +189,29 @@ void change(char keyword[])
 	char parent[] = "..";
 	char top[] = "-1";
 	char star[] = STAR;
-	if (strcmp(keyword, root) == 0) cur = 0; //·çÆ®·Îº¯°æ
+	if (strcmp(keyword, root) == 0) cur = 0; //ë£¨íŠ¸ë¡œë³€ê²½
 	else if (strcmp(keyword, parent) == 0)
 	{
 		cur = file_list[cur].getParent();
-		if (cur == -1) cur = 0; //·çÆ®ÀÇ ºÎ¸ğ´Â ·çÆ®
+		if (cur == -1) cur = 0; //ë£¨íŠ¸ì˜ ë¶€ëª¨ëŠ” ë£¨íŠ¸
 		return;
 	}
 	else if (strcmp(keyword, star) == 0)
 	{
 		file_list[cur].setItr();
 		if (file_list[cur].getNext())
-		{//Ã¹ ³ëµå°¡ Á¸ÀçÇÏ¸é curº¯°æ
+		{//ì²« ë…¸ë“œê°€ ì¡´ì¬í•˜ë©´ curë³€ê²½
 			cur = file_list[cur].getItr()->idx;
 			return;
 		}
 	}
 	else
-	{//¹®ÀÚ¿­ ¶Ç´Â ¹®ÀÚ¿­*
+	{//ë¬¸ìì—´ ë˜ëŠ” ë¬¸ìì—´*
 		char str[MAX_LEN];
 		strcpy(str, keyword);
 		int st_len = strlen(str);
 		if (keyword[strlen(keyword) - 1] == '*')
-		{//¹®ÀÚ¿­*ÀÏ °æ¿ì
+		{//ë¬¸ìì—´*ì¼ ê²½ìš°
 			str[--st_len] = 0;
 			file_list[cur].setItr();
 			while (file_list[cur].getNext())
@@ -256,7 +256,7 @@ int remove(char keyword[])
 		strcpy(str, keyword);
 		int st_len = strlen(str);
 		if (keyword[strlen(keyword) - 1] == '*')
-		{//¹®ÀÚ¿­*ÀÏ °æ¿ì
+		{//ë¬¸ìì—´*ì¼ ê²½ìš°
 			str[--st_len] = 0;
 			file_list[cur].setItr();
 			while (file_list[cur].getNext())
@@ -272,7 +272,7 @@ int remove(char keyword[])
 			}
 		}
 		else
-		{//¹®ÀÚ¿­ÀÏ°æ¿ì
+		{//ë¬¸ìì—´ì¼ê²½ìš°
 			file_list[cur].setItr();
 			while (file_list[cur].getNext())
 			{
@@ -334,12 +334,12 @@ int find(char keyword[])
 		strcpy(str, keyword);
 		int st_len = strlen(str);
 		if (keyword[strlen(keyword) - 1] == '*')
-		{//¹®ÀÚ¿­*ÀÏ °æ¿ì
+		{//ë¬¸ìì—´*ì¼ ê²½ìš°
 			str[--st_len] = 0;
 			count_startwith(cur, str);
 		}
 		else
-		{//¹®ÀÚ¿­ÀÏ°æ¿ì
+		{//ë¬¸ìì—´ì¼ê²½ìš°
 			countstr(cur, str);
 		}
 	}
