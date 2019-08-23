@@ -3,7 +3,6 @@ const int MAX_HASH = 30000;
 const int INF=987654321;
 
 struct node{
-  int idx;
   int block[4][4];
   int block_shape;
   int max_height;
@@ -21,7 +20,12 @@ struct list{
   }
 };
 
-int my_idx[MAX];
+struct Idx{
+  int idx;
+  int block_shape;
+};
+
+Idx my_idx[MAX];
 list my_hash[MAX_HASH];
 node nodes[MAX];
 
@@ -32,7 +36,7 @@ int get_idx(int block_shape){
 
   while(low<high){
     mid = (low + high)/2;
-    if(block_shape > my_idx[mid]){
+    if(block_shape > my_idx[mid].block_shape){
       low = mid+1;
     }
     else{
@@ -40,11 +44,11 @@ int get_idx(int block_shape){
     }
   }
 
-  if(my_idx[high] != block_shape){
+  if(my_idx[high].block_shape != block_shape){
     return -1;
   }
 
-  return high;
+  return my_idx[high].idx;
 }
 
 void quick_sort(int first, int last){
@@ -81,16 +85,16 @@ void quick_sort_idx(int first, int last){
   int pivot=0;
   int i=0;
   int j=0;
-  int tmp;
+  Idx tmp;
   if(first < last){
     pivot = first;
     i = first;
     j = last;
     while(i<j){
-      while(my_idx[i] <= my_idx[pivot] && i < last){
+      while(my_idx[i].block_shape <= my_idx[pivot].block_shape && i < last){
         i++;
       }
-      while(my_idx[j] > my_idx[pivot]){
+      while(my_idx[j].block_shape > my_idx[pivot].block_shape){
         j--;
       }
       if(i<j){
@@ -185,24 +189,27 @@ void update_node(int module[][4][4]){
       }
     }
     sum = hash_function(nodes[i].block);
-    nodes[i].idx = i;
     nodes[i].max_height = max_h;
     nodes[i].min_height = min_h;
     nodes[i].block_shape = sum;
-    my_idx[i] = sum;
     nodes[i].is_use = 0;
   }
 
+
   quick_sort(0, MAX-1);
+  for(int i=0;i<MAX;i++){
+    my_idx[i].idx = i;
+    my_idx[i].block_shape = nodes[i].block_shape;
+  }
   quick_sort_idx(0, MAX-1);
 }
 
 int match(){
-  for(int i=0;i<MAX_HASH;i++){
-    if(my_hash[i].head && my_hash[i].head->next){
-      int a = 1;
-    }
-  }
+  // for(int i=0;i<MAX_HASH;i++){
+  //   if(my_hash[i].head && my_hash[i].head->next){
+  //     int a = 1;
+  //   }
+  // }
 
 
   int ret =0;
@@ -212,16 +219,26 @@ int match(){
   // bool is_match=0;
   node* tmp=0;
   node* match_node=0;
+  int flag=0;
+  int check =0;
   for(int i=MAX-1; i>=0; i--){
-
+    flag=0;
+    check = nodes[i].block[0][0];
     if(nodes[i].is_use) continue;
 
     for(int y=0;y<4;y++){
       for(int x=0;x<4;x++){
         target_block[y][x] = 2 - nodes[i].block[y][x];
+        if(check != nodes[i].block[y][x]) flag=1;
       }
     }
 
+    if(flag==0){
+      ret += nodes[i].max_height;
+      nodes[i].is_use = 1;
+      my_hash[get_idx(nodes[i].block_shape)].head = nodes[i].next;
+      continue;
+    }
     //flip
     for(int y=0;y<4;y++){
       int value = target_block[y][0];
