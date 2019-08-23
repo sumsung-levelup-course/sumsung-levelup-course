@@ -62,33 +62,24 @@ int find_idx(int matrix[4][4]) {
 }
 
 int rotate(int n, int matrix[4][4]) {
-	int tmp[4][4], tmp2[4][4];
-	n += 1;
+	
+	if (n == 0) {
+		return find_idx(matrix);
+	}
 
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			tmp2[i][j] = matrix[i][j];
+	int tmp[4][4];
+	int i, j;
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			tmp[j][3 - i] = matrix[i][j];
 		}
 	}
 
-	while (n) {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				tmp[j][3 - i] = tmp2[i][j];
-			}
-		}
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				tmp2[i][j] = tmp[i][j];
-			}
-		}
-		n-=1;
-	}
-	return find_idx(tmp);
+	return rotate(n - 1, tmp);
 }
 
-int isExist(int idx, int block) {
-	int ret = NONE;
+int isExist(int block) {
+	int ret = NONE; //return할 idx 저장
 	int _max = 0;
 	Node* ptr = table + block / 10000;
 	while (ptr->next != 0) {
@@ -104,12 +95,12 @@ int isExist(int idx, int block) {
 			if (ret == NONE)
 			{
 				ret = ptr->idx;
-				_max = d[ptr->idx]._max + d[idx].base;
+				_max = d[ptr->idx]._max;
 			}
 			else {
-				if (_max < (d[ptr->idx]._max + d[idx].base)) {
+				if (_max < d[ptr->idx]._max) {
 					ret = ptr->idx;
-					_max = d[ptr->idx]._max + d[idx].base;
+					_max = d[ptr->idx]._max;
 				}
 			}
 		}
@@ -147,7 +138,7 @@ int makeBlock(int module[][4][4])
 
 		d[i].block = find_idx(matrix);
 		d[i].check = false;
-		
+
 		Node* ptr = list[d[i]._max] + d[i].diff;
 		if (ptr->next == 0) {
 			Node* tmp = new Node();
@@ -184,21 +175,25 @@ int makeBlock(int module[][4][4])
 						matrix[i1][i2] = d[ptr->idx]._max - module[ptr->idx][i1][i2];
 					}
 				}
-				int block = find_idx(matrix);
-				idx = isExist(ptr->idx, block);
 
-				if (idx != NONE) {
-					_maxId = idx;
-					_max = d[idx]._max + d[ptr->idx].base;
+				for (int i1 = 0; i1 < 4; i1++) {
+					int tmp1 = 0;
+					tmp1 = matrix[i1][0];
+					matrix[i1][0] = matrix[i1][3];
+					matrix[i1][3] = tmp1;
+
+					tmp1 = matrix[i1][1];
+					matrix[i1][1] = matrix[i1][2];
+					matrix[i1][2] = tmp1;
 				}
 
-				for (int i1 = 0; i1 < 3; i1++) {
+				for (int i1 = 0; i1 <= 3; i1++) {
 					idx = NONE;
-					block = rotate(i1, matrix);
-					idx = isExist(ptr->idx, block);
+					int block = rotate(i1, matrix);
+					idx = isExist(block);
 
 					if (idx != NONE) {
-						if (_maxId == NONE ) {
+						if (_maxId == NONE) {
 							_maxId = idx;
 							_max = d[idx]._max + d[ptr->idx].base;
 						}
@@ -213,7 +208,7 @@ int makeBlock(int module[][4][4])
 				if (_maxId != NONE) {
 					d[_maxId].check = true;
 					d[ptr->idx].check = true;
-					ret += _max;
+					ret += d[ptr->idx]._max + d[_maxId].base;
 				}
 				ptr = ptr->next;
 			}
