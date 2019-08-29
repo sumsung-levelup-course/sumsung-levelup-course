@@ -1,3 +1,28 @@
+/*
+메인 코드를 제외한 유저 코드입니다.
+transform 함수 코드는 메인 코드의 큐브 돌리기를 그대로 따온 코드입니다. 몇 개 수정하긴 했지만 안 보셔도 됩니다.
+
+[풀이 순서]
+
+1. 섞이지 않은 큐브의 5번 돌리는 모든 경우의 수를 구함 12 ^ 5
+
+2. 10회 섞인 큐브의 5번 돌리는 모든 경우의 수를 구함 12 ^ 5
+
+3. 똑같이 일치하는 큐브 중 두 합의 경로가 가장 적은 것을 구함(최솟값을 찾기 위해)
+
+[주의할 점]
+
+해당 문제는 반드시 배열을 사용해야 합니다. 해시로 시간 안 나옵니다.
+
+구조체 정렬은 퀵소트를 사용해야 합니다. 다른 정렬은 시간이 안 됩니다.
+
+구조체에는 총 int[15]로 구성해야 합니다. 20개 넘어가면 시간이 안 나올 겁니다.
+
+6면에 대한 정보(6), 해당 6면을 만들기 위한 경로 (6) , 돌린 횟수 (1)
+
+시간 복잡도가 굉장히 타이트합니다. 중고차보다 더합니다.
+*/
+
 #define CUBE_SIZE   3
 #define FRONT       0
 #define BACK        1
@@ -8,13 +33,12 @@
 
 extern void rotate(int face, bool clockwise);
 
-
 struct emp {
 	// 6면 숫자
 	int data[6];
-	// 바뀐 순서
+	// 돌린 경로
 	int from[5];
-	// 바뀐 횟수
+	// 돌린 횟수
 	int index;
 }cnt[300000];
 
@@ -297,7 +321,7 @@ void make_cnt(int x, int S[5]) {
 	}
 }
 
-// 대소 비교 a가클경우 0 b가클경우 1
+// 대소 비교 a가클경우 0 b가클경우 1 같을경우 2
 int cnt_comp(emp &a, emp &b) {
 	for (register int i = 0; i < 6; i++) {
 		if (a.data[i] == b.data[i])continue;
@@ -343,7 +367,7 @@ void init() {
 	for (register int i = 0; i < 6; i++)cnt[sz].data[i] = 1e9;
 	quickSort(0, sz);
 }
-// 이분탐색 pos 초과
+// 이분탐색 pos 이상
 int low_bound(int x, int l, int r, int pos) {
 	while (l < r) {
 		int m = (l + r) / 2;
